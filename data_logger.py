@@ -5,16 +5,12 @@ import bme280
 import smbus2
 import time
 
-"""
 # Sensor Setup
 port = 1
 address = 0x76
 bus = smbus2.SMBus(port)
 
 bme280.load_calibration_params(bus,address)
-"""
-
-
 
 # Measurement interval (seconds)
 measurement_interval = 1
@@ -40,37 +36,24 @@ for i in range(rep):
 
     count = measurement_interval
     while count <= total_time:
-        humidity = 75.4
-        temperature = 20.3
-        pressure = 1000
-        
-        current_date = time.strftime("%Y%m%d", time.localtime())
-        current_time = time.strftime("%H%M%S", time.localtime())
-        
-        data_row = [current_date, current_time, f'{temperature:.2f}', f'{humidity:.2f}', f'{pressure:.2f}']
-        
-        
-        with open(csv_filename, mode='a') as file:
-            writer = csv.writer(file)
-            writer.writerow(data_row)
-          
-        #print(f"Temperature: {temperature:.2f} °C, Humidity: {humidity:.2f} % - Recorded at {current_time}")
-    
-        time.sleep(measurement_interval)
-        count = count + measurement_interval
+	bme280_data = bme280.sample(bus,address)
+		ambient_temperature = bme280_data.temperature
+		humidity  = bme280_data.humidity
+		pressure  = bme280_data.pressure
 
+        	current_date = time.strftime("%Y%m%d", time.localtime())
+        	current_time = time.strftime("%H%M%S", time.localtime())
 
+        	data_row = [current_date, current_time, f'{temperature:.2f}', f'{humidity:.2f}', f'{pressure:.2f}']
 
-"""
-while True:
-    bme280_data = bme280.sample(bus,address)
-    humidity  = bme280_data.humidity
-    pressure  = bme280_data.pressure
-    ambient_temperature = bme280_data.temperature
-    print(humidity, pressure, ambient_temperature)
-    sleep(1)
-"""
+	        with open(csv_filename, mode='a') as file:
+        		writer = csv.writer(file)
+            		writer.writerow(data_row)
 
+	        print(f"Temperature: {temperature:.2f} °C, Humidity: {humidity:.2f} % - Recorded at {current_time}")
+
+        	time.sleep(measurement_interval)
+        	count = count + measurement_interval
 
 
 
