@@ -27,33 +27,32 @@ csv_header = ['Date', 'Time', 'Temperature (C)', 'Humidity (%)', 'Pressure (mb)'
 
 
 for i in range(rep):
-    timestamp = time.strftime("%Y%m%d%H%M%S", time.localtime())
-    csv_filename = 'data_' + timestamp + '.csv'  # Name of the CSV file
+	timestamp = time.strftime("%Y%m%d%H%M%S", time.localtime())
+	csv_filename = 'data_' + timestamp + '.csv'  # Name of the CSV file
+	
+	with open(csv_filename, mode='w') as file:
+		writer = csv.writer(file)
+		writer.writerow(csv_header)
 
-    with open(csv_filename, mode='w') as file:
-        writer = csv.writer(file)
-        writer.writerow(csv_header)
-
-    count = measurement_interval
-    while count <= total_time:
-	bme280_data = bme280.sample(bus,address)
-		ambient_temperature = bme280_data.temperature
+	count = measurement_interval
+	while count <= total_time:
+		ambient_temperature = bme280_data.temperature 
 		humidity  = bme280_data.humidity
 		pressure  = bme280_data.pressure
 
-        	current_date = time.strftime("%Y%m%d", time.localtime())
-        	current_time = time.strftime("%H%M%S", time.localtime())
+		current_date = time.strftime("%Y%m%d", time.localtime())
+		current_time = time.strftime("%H%M%S", time.localtime())
+	
+		data_row = [current_date, current_time, f'{temperature:.2f}', f'{humidity:.2f}', f'{pressure:.2f}']
 
-        	data_row = [current_date, current_time, f'{temperature:.2f}', f'{humidity:.2f}', f'{pressure:.2f}']
+		with open(csv_filename, mode='a') as file:
+			writer = csv.writer(file)
+			writer.writerow(data_row)
 
-	        with open(csv_filename, mode='a') as file:
-        		writer = csv.writer(file)
-            		writer.writerow(data_row)
+		print(f"Temperature: {temperature:.2f} °C, Humidity: {humidity:.2f} % - Recorded at {current_time}")
 
-	        print(f"Temperature: {temperature:.2f} °C, Humidity: {humidity:.2f} % - Recorded at {current_time}")
-
-        	time.sleep(measurement_interval)
-        	count = count + measurement_interval
+		time.sleep(measurement_interval)
+		count = count + measurement_interval
 
 
 
