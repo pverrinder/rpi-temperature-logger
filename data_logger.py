@@ -13,13 +13,13 @@ bus = smbus2.SMBus(port)
 bme280.load_calibration_params(bus,address)
 
 # Measurement interval (seconds)
-measurement_interval = 1
+measurement_interval = 300
 
 # Total run time (seconds). This is the length of a single data file
-total_time = 10
+total_time = 3600*12
 
 # Number of repetitions. i.e. the number of times to repeat total_time
-rep = 2
+rep = 1
 
 
 # CSV file header
@@ -36,7 +36,8 @@ for i in range(rep):
 
 	count = measurement_interval
 	while count <= total_time:
-		ambient_temperature = bme280_data.temperature 
+		bme280_data = bme280.sample(bus,address)
+		temperature = bme280_data.temperature 
 		humidity  = bme280_data.humidity
 		pressure  = bme280_data.pressure
 
@@ -49,7 +50,7 @@ for i in range(rep):
 			writer = csv.writer(file)
 			writer.writerow(data_row)
 
-		print(f"Temperature: {temperature:.2f} °C, Humidity: {humidity:.2f} % - Recorded at {current_time}")
+		#print(f"Temperature: {temperature:.2f} °C, Humidity: {humidity:.2f} % - Recorded at {current_time}")
 
 		time.sleep(measurement_interval)
 		count = count + measurement_interval
